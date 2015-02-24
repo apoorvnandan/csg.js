@@ -3,6 +3,9 @@
   <script src="lightgl.js"></script>
   <script src="csg.js"></script>
   <script src="viewer.js"></script>
+  <script src="asu/apinatomy2-data.js"></script>
+  <script src="asu/repositories.js"></script>
+  
   <style>
 
 body {
@@ -44,18 +47,45 @@ canvas { cursor: move; }
   </style>
 </head><body>
 <table>
+    
     <tr>
-      <td><div id="0" class="viewer" style="background-image:none;width:400px;height:400px;"></div></td>
+      <td><div id="0" class="viewer" style="background-image:none;width:600px;height:600px;"></div></td>
     </tr>
   </table>
 <script>
 
 
-var x = CSG.cylinder({ radius: 1, start: [-2, 0, 0], end: [2, 0, 0] });
-var y = CSG.cylinder({ radius: 0.9, start: [-3, 0, 0], end: [3, 0, 0] });
-x.setColor(1, 0, 0);
-y.setColor(0, 0.5, 1);
+function generateTube(asu) {
+  
+  var tubeRadius = [];
+  tubeRadius[0] = 0.4; //radius of the hollow part
+  //calculate cylinder radius based on thickness of each layer
+  for(var i = 1;i<=asu.getNumberOfLayers();i++) {
+    tubeRadius[i] = tubeRadius[i-1] + (asu.layers[i-1].thickness)/10;
 
-addViewer(new Viewer(x.subtract(y), 400, 400, 5));
-  </script>
+  }
+  var tube = [];
+  for(var i = 0;i<=asu.getNumberOfLayers();i++) {
+   tube[i] = CSG.cylinder({ radius: tubeRadius[i], start: [0, -1, 0], end: [0, 1, 0] });
+   //set different color for each layer
+   if(i%3==0) tube[i].setColor(0, 0, 1);
+   else if(i%3==1) tube[i].setColor(0, 1, 0);
+   else tube[i].setColor(1, 0, 0);
+  }
+
+  //combine the cylinders
+  var x = tube[1];
+  for(var i=2;i<=asu.getNumberOfLayers();i++) {
+    x = x.union(tube[i]);
+  }
+  x = x.subtract(tube[0]); //to make the cylinder hollow
+
+  addViewer(new Viewer(x, 400, 400, 4));
+
+}
+
+
+generateTube(au);
+
+</script>
 </body></html>
