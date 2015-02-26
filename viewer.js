@@ -131,5 +131,5 @@ function Viewer(csg, width, height, depth) {
 
 var nextID = 0;
 function addViewer(viewer) {
-  document.getElementById(nextID++).appendChild(viewer.gl.canvas);
+  document.getElementById(nextID).appendChild(viewer.gl.canvas); //nextID++
 }
