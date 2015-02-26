@@ -1,3 +1,5 @@
+var selected = null;
+
 var auEditor = function () {
     var width = 960, height = 500;
     var panelWidth = 300, panelHeight = 500;
@@ -313,4 +315,5 @@ var auEditor = function () {
         mainVP.orientation = value;
         selectedAU.draw(svg, mainVP, onSelectLayer);
     });
+    selected = selectedAU;
 }();
