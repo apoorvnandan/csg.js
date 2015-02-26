@@ -130,6 +130,13 @@ function Viewer(csg, width, height, depth) {
 }
 
 var nextID = 0;
+/*function addViewer(viewer) {
+  document.getElementById(nextID++).appendChild(viewer.gl.canvas); 
+}*/
 function addViewer(viewer) {
-  document.getElementById('0').appendChild(viewer.gl.canvas); //nextID++
+  var myNode = document.getElementById('0');
+  while (myNode.firstChild) {
+    myNode.removeChild(myNode.firstChild);
+  }
+  myNode.appendChild(viewer.gl.canvas);
 }
