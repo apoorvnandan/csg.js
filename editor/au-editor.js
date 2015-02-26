@@ -124,6 +124,7 @@ var auEditor = function () {
     //AU Parameters
     ////////////////////////////////////////////////////////////
     function updateAUParameters(au){
+        selected = au;
         d3.select("#auID").property("value", au.id);
         d3.select("#auName").property("value", au.name);
         d3.select("#auLength").property("value", au.length);
@@ -315,5 +316,5 @@ var auEditor = function () {
         mainVP.orientation = value;
         selectedAU.draw(svg, mainVP, onSelectLayer);
     });
-    selected = selectedAU;
+    
 }();
