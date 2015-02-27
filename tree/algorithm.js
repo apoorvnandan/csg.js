@@ -49,16 +49,41 @@
 			var diamScale = 10; 			
 			
 			//Bracnh radius depends on the tree level and layer
-			function getStartRadius(level, layer){
+			function getStartRadius(level, layer, asu){
+				var f = [];
+				
+				var sum  = 0;
+				for(var i = 0; i<asu.getNumberOfLayers(); i++) {
+					if(i!=0)
+						f[i] = f[i-1]+asu.layers[i].thickness;
+					else
+						f[i] = asu.layers[0].thickness;
+					sum += asu.layers[i].thickness;
+				}
+
+
 				if (level >= levelDiameters.size) level = levelDiameters.size - 1; 
 				var radius = levelDiameters[level] * diamScale;
-				return Math.max(radius * (1 - 0.2 * layer /(endLayer - startLayer + 1)), 1);
+				//return Math.max(radius * (1 - 0.2 * layer /(endLayer - startLayer + 1)), 1);
+				return Math.max(radius * (1 - 0.2 * f[layer]/sum), 1);
 			}
 			
-			function getEndRadius(level, layer){
+			function getEndRadius(level, layer, asu){
+				var f = [];
+				
+				var sum  = 0;
+				for(var i = 0; i<asu.getNumberOfLayers(); i++) {
+					if(i!=0)
+						f[i] = f[i-1]+asu.layers[i].thickness;
+					else
+						f[i] = asu.layers[0].thickness;
+					sum += asu.layers[i].thickness;
+				}
+
 				if (level >= levelDiameters.size - 1) level = levelDiameters.size - 2; 
 				var radius = levelDiameters[level + 1] * diamScale;
-				return Math.max(radius * (1 - 0.2 * layer /(endLayer - startLayer + 1)), 1);
+				//return Math.max(radius * (1 - 0.2 * layer /(endLayer - startLayer + 1)), 1);
+				return Math.max(radius * (1 - 0.2 * f[layer]/sum), 1);
 			}
 			
 			//proportion of the edge length from lobar to the center of mass
@@ -71,6 +96,8 @@
 			function generateLungs(asu){
 				
 				myasu = asu;
+				//reverse the layers array
+				myasu.layers.reverse();
 
                 var radius = 100, height = 300;
                 var left = new THREE.Vector3(-radius, 0, 0);
@@ -197,8 +224,8 @@
 				startLayer = 0; endLayer = myasu.getNumberOfLayers()-1; console.log(au);
 				for (var layer = startLayer; layer <= endLayer; layer++){
 				//for (var layer = endLayer; layer >= startLayer; layer--){
-					var radius1 = getStartRadius(level, layer);
-					var radius2 = getEndRadius(level, layer);
+					var radius1 = getStartRadius(level, layer, myasu);
+					var radius2 = getEndRadius(level, layer, myasu);
 					var material = getBranchMaterial(level, layer);
 					material = new THREE.MeshLambertMaterial(
 						{color: myasu.layers[layer].material.colour, transparent: true, 
